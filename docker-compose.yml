@@ -1,0 +1,45 @@
+version: "3.8"
+
+services:
+
+  web:
+    image: nginx:latest
+    container_name: nginx-web
+    ports:
+      - "80:80"
+    volumes:
+      - ./html:/usr/share/nginx/html
+    depends_on:
+      - db
+    networks:
+      - webnet
+
+  db:
+    image: postgres:15
+    container_name: postgres-db
+    restart: always
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin123
+      POSTGRES_DB: latihan
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - webnet
+
+  app:
+    build: ./app
+    image: myapp:v1
+    container_name: myapp
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+    networks:
+      - webnet
+
+volumes:
+  postgres_data:
+
+networks:
+  webnet:
